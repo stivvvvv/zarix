@@ -1,0 +1,59 @@
+﻿
+
+
+2)b)
+[1]
+ManyToOne(targetEntity: Category::class, mappedBy: 'films')
+[2]
+private $category;
+[3]
+OneToMnay(targetEntity: Film::class)
+[4]
+private Collection $films;
+
+3/ 
+
+ 
+
+5-b
+@Route("/film/{id}", name="getfilm")
+
+$film = $repo->find($id); 
+if (!$film) { throw $this->createNotFoundException('Film not found'); 
+} $film->incrementViews(); 
+ $MR->flush();
+ return $this->render('film/show.html.twig', 
+return $this->render('film/show.html.twig', [ 
+'film' => $film, 
+]); 
+} 
+}
+
+4-a.
+ l'erreur généré est une erreur d'excécution, car l'utilisation du void est incorrecte.
+
+4-b
+
+public function buildForm(FormBuilderInterface $builder, array $options)
+{
+    $builder
+        ->add('title')
+        ->add('description')
+        ->add('category');
+}
+
+
+5-C
+return $this->redirectToRoute('liste_films'); 
+
+
+5.a #[Route('/getFilm/{id}, name: ‘getFilm')]
+ public function listFilms(FilmRepository $filmRepository) { 
+$films = $filmRepository->findAll(); 
+return $this->render('film/list.html.twig', [ 'films' => $films, ]); }
+
+
+
+
+
+
