@@ -1,0 +1,67 @@
+4/La visibilité de la méthode doit être public, et non void.
+Le nom de l'argument $builder doit être précédé du type FormBuilderInterface
+public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title', TextType::class)
+            ->add('description', TextareaType::class)
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' => 'name',
+            ]);
+    }
+
+6.{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h1>Liste des films</h1>
+
+    {% if films is not empty %}
+        <h2>Film le plus populaire :</h2>
+        <p>Titre : {{ mostPopularFilm.title }}</p>
+        <p>Description : {{ mostPopularFilm.description }}</p>
+        <p>Nombre de vues : {{ mostPopularFilm.views }}</p>
+    {% else %}
+        <p>Aucun film trouvé.</p>
+    {% endif %}
+
+    <h2>Tous les films :</h2>
+    <ul>
+        {% for film in films %}
+            <li>{{ film.title }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+7. public function filmByCat($id, EntityManagerInterface $entityManager): Response
+    {
+        $films = $entityManager->createQueryBuilder()
+            ->select('f')
+            ->from('App\Entity\Film', 'f')
+            ->join('f.category', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $id)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('film/category.html.twig', [
+            'films' => $films,
+        ]);
+    }
+}
+8/
+ekteb wehed fehom moch zouz
+Code DQL :
+
+
+$query = $entityManager->createQuery('SELECT f FROM App\Entity\Film f WHERE f.views > 100');
+$films = $query->getResult();
+Code QueryBuilder :
+
+
+$films = $entityManager->createQueryBuilder()
+    ->select('f')
+    ->from('App\Entity\Film', 'f')
+    ->where('f.views > :views')
+    ->setParameter('views', 100)
+    ->getQuery()
+    ->getResult();
