@@ -1,0 +1,53 @@
+Probléme 
+1.a/  Pour modifier la clé primaire de la classe Category afin qu'elle ne soit pas générée automatiquement, on va suivre suivre ces étapes
+.Ouvrez le fichier Category.php correspondant à l'entité Category dans votre projet Symfony.
+.Recherchez la déclaration de la propriété $id dans la classe Category.
+
+.Supprimez l'annotation @GeneratedValue de la déclaration de la propriété $id
+b/L'Entity Manager est une composante clé de Doctrine, l'ORM utilisé par Symfony. 
+Il offre une interface pour interagir avec les entités de votre application et gère la persistance des objets dans la base de données. 
+Voici deux méthodes couramment utilisées grâce à l'Entity Manager :
+persist($entity)  
+find($entityName, $id) 
+2/ a-    Dans la classe film : /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="films")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
+
+
+Dans la classe category :  /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="films")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
+
+
+php bin/console doctrine:schema:update --force
+3/
+public function addFilm(Request $request): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        // Récupérer les données du formulaire
+        $title = $request->request->get('title');
+        $description = $request->request->get('description');
+        $categoryId = $request->request->get('category');
+
+        // Rechercher la catégorie par son ID
+        $category = $entityManager->getRepository(Category::class)->find($categoryId);
+
+        // Créer une nouvelle instance de Film
+        $film = new Film();
+        $film->setTitle($title);
+        $film->setDescription($description);
+        $film->setCategory($category);
+
+        // Persister l'entité et la sauvegarder dans la base de données
+        $entityManager->persist($film);
+        $entityManager->flush();
+
+        // Rediriger vers une page de confirmation ou autre
+        return $this->renderForm('film/add.html.twig,['f'=>$form]);
+    }
+
